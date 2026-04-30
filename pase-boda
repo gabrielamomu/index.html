@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pase confirmado</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Georgia, serif;
+      background: #f8f7f2;
+      color: #3f4a32;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .card {
+      background: white;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      border-radius: 24px;
+      padding: 36px 26px;
+      box-shadow: 0 10px 30px rgba(63, 74, 50, 0.15);
+      border: 1px solid #d8dccd;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 32px;
+      color: #3f4a32;
+    }
+
+    .thanks {
+      font-size: 22px;
+      margin: 10px 0 28px;
+    }
+
+    .info {
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .qr {
+      margin: 20px auto;
+      width: 230px;
+      height: 230px;
+    }
+
+    .footer {
+      font-size: 15px;
+      margin-top: 20px;
+      color: #5f6b4c;
+    }
+
+    .code {
+      font-size: 13px;
+      margin-top: 12px;
+      color: #7a8468;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>Aldo y Katia</h1>
+    <div class="thanks">Gracias✨</div>
+
+    <div class="info">
+      Invitado: <strong id="familia"></strong><br>
+      Su asistencia ha sido confirmada.<br>
+      Pases reservados: <strong id="personas"></strong><br>
+      Pases confirmados: <strong id="confirmados"></strong>
+    </div>
+
+    <img class="qr" id="qr" alt="Código QR" />
+
+    <div class="footer">
+      Presente este código el día del evento.
+    </div>
+
+    <div class="code" id="codigo"></div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+
+    const familia = params.get("familia") || "Invitado";
+    const personas = params.get("personas") || "0";
+    const confirmados = params.get("confirmados") || "0";
+    const codigo = params.get("codigo") || "SIN-CODIGO";
+
+    document.getElementById("familia").textContent = familia;
+    document.getElementById("personas").textContent = personas;
+    document.getElementById("confirmados").textContent = confirmados;
+    document.getElementById("codigo").textContent = codigo;
+
+    const qrText = `${codigo} | ${familia} | ${confirmados} pases`;
+
+    const qrUrl =
+      "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
+      encodeURIComponent(qrText);
+
+    document.getElementById("qr").src = qrUrl;
+  </script>
+
+</body>
+</html>
