@@ -6,36 +6,92 @@
 <title>Check-in</title>
 <script src="https://unpkg.com/html5-qrcode"></script>
 <style>
-  body{font-family:Arial; text-align:center; padding:20px; background:#f5f5f0;}
-  #result{margin-top:20px; font-size:18px;}
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+    background: #f8f7f2;
+    color: #2f3a25;
+  }
+
+  #reader {
+    width: 320px;
+    margin: 20px auto;
+  }
+
+  #result {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 18px;
+    border-radius: 14px;
+    background: white;
+  }
+
+  button {
+    margin-top: 20px;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 10px;
+    background: #2f3a25;
+    color: white;
+    font-size: 16px;
+  }
 </style>
 </head>
 <body>
 
-<h2>Escanear QR</h2>
-<div id="reader" style="width:300px;margin:auto;"></div>
-<div id="result"></div>
+<h2>Check-in de invitados</h2>
+
+<div id="reader"></div>
+
+<div id="result">Esperando escaneo...</div>
+
+<button onclick="location.reload()">Escanear otro QR</button>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbxr0h5dFyQ6ukfVhu8N597qCRxbMZVs86Da1UThLQcfyAuYr08tTCa8sCFVPU0oGS2v/exec";
+const API = "PEGA_AQUI_TU_URL_DE_APPS_SCRIPT";
+
+let scannerActivo = true;
 
 function onScanSuccess(decodedText) {
-  // decodedText = "B001 | Familia López | 2 pases"
+  if (!scannerActivo) return;
+  scannerActivo = false;
+
+  document.getElementById("result").innerHTML = "Leyendo QR...";
+
   const codigo = decodedText.split("|")[0].trim();
 
-  fetch(`${API}?codigo=${codigo}`)
-    .then(r => r.json())
+  document.getElementById("result").innerHTML =
+    "Código leído: " + codigo + "<br>Validando...";
+
+  fetch(API + "?codigo=" + encodeURIComponent(codigo))
+    .then(response => response.json())
     .then(data => {
       if (data.status === "ok") {
         document.getElementById("result").innerHTML =
-          `✅ Bienvenido ${data.familia} (${data.confirmados} personas)`;
-      } else if (data.status === "duplicate") {
+          "✅ Acceso confirmado<br>" +
+          data.familia + "<br>" +
+          data.confirmados + " personas";
+      } 
+      else if (data.status === "duplicate") {
         document.getElementById("result").innerHTML =
-          `⚠️ ${data.familia} ya había ingresado`;
-      } else {
+          "⚠️ Este QR ya fue usado<br>" +
+          data.familia;
+      } 
+      else if (data.status === "not_found") {
         document.getElementById("result").innerHTML =
-          `❌ Código no válido`;
+          "❌ Código no encontrado";
+      } 
+      else {
+        document.getElementById("result").innerHTML =
+          "❌ Error desconocido";
       }
+    })
+    .catch(error => {
+      document.getElementById("result").innerHTML =
+        "❌ Error conectando con la base de datos<br><br>" +
+        error;
     });
 }
 
