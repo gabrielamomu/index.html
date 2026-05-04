@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check-in</title>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<style>
+  body{font-family:Arial; text-align:center; padding:20px; background:#f5f5f0;}
+  #result{margin-top:20px; font-size:18px;}
+</style>
+</head>
+<body>
+
+<h2>Escanear QR</h2>
+<div id="reader" style="width:300px;margin:auto;"></div>
+<div id="result"></div>
+
+<script>
+const API = "PEGA_AQUI_TU_URL_DE_APPS_SCRIPT";
+
+function onScanSuccess(decodedText) {
+  // decodedText = "B001 | Familia López | 2 pases"
+  const codigo = decodedText.split("|")[0].trim();
+
+  fetch(`${API}?codigo=${codigo}`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === "ok") {
+        document.getElementById("result").innerHTML =
+          `✅ Bienvenido ${data.familia} (${data.confirmados} personas)`;
+      } else if (data.status === "duplicate") {
+        document.getElementById("result").innerHTML =
+          `⚠️ ${data.familia} ya había ingresado`;
+      } else {
+        document.getElementById("result").innerHTML =
+          `❌ Código no válido`;
+      }
+    });
+}
+
+new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 })
+  .render(onScanSuccess);
+</script>
+
+</body>
+</html>
