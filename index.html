@@ -83,6 +83,12 @@
       Presente este código el día del evento.
     </div>
 
+    <a id="whatsappBtn" target="_blank">
+  <button style="margin-top:15px; padding:10px 15px; border-radius:8px; border:none; background:#3f4a32; color:white;">
+    Enviar mi pase por WhatsApp
+  </button>
+</a>
+    
     <div class="code" id="codigo"></div>
   </div>
 
@@ -100,7 +106,20 @@
     document.getElementById("codigo").textContent = codigo;
 
     const qrText = `${codigo} | ${familia} | ${confirmados} pases`;
+    
+    const mensaje = `Aldo y Katia
+Gracias✨
 
+Invitado: ${familia}
+Pases confirmados: ${confirmados}
+
+Tu pase:
+${window.location.href}`;
+
+const waLink = "https://wa.me/?text=" + encodeURIComponent(mensaje);
+
+document.getElementById("whatsappBtn").href = waLink;
+    
     const qrUrl =
       "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
       encodeURIComponent(qrText);
